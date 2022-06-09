@@ -1,4 +1,3 @@
-
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
@@ -27,6 +26,7 @@ exports.getBirthDate = functions.region('asia-northeast3').https.onRequest((requ
 let populateFirebaseUser = async (reportKey, birthDate) => {  
   return admin.auth().createUser({
     email: reportKey+'@teamelysium.kr',
+    emailVerified: false,
     password: birthDate
   })
   .then((userRecord) => {
@@ -35,29 +35,30 @@ let populateFirebaseUser = async (reportKey, birthDate) => {
     return userRecord.uid;
   })
   .catch((error) => {
-    console.log('Error creating new user:', error);
+    const errorCode = error.code;
+    switch(errorCode){
+      case 'auth/invalid-email':
+        // TODO : need to edit later
+        console.log("auth/invalid-email.");
+        case 'auth/email-already-exists':
+          // TODO : need to edit later
+          console.log("auth/email-already-exists.");
+        }
+
+
+    const errorMessage = error.message;
   });
 }
 
+const storeReport = (uid)=> {  
+  // console.log("storage : " + storage);
+  // const storageReference = storageBucket.ref();
+  for(proper in storageReference){
+    console.log("storage data : " + proper);
+  }
+  //storageReference.child('images/mountains.jpg');
+} 
 
-let requestAllimTalk = (reportKey, birthDate, phoneNumber, reportFile) => {
-
-  
-   
-    return;
-}
-
-
-
-//
-let storeReport = (reportKey, birthDate) => {
-
-    return;
-}
-
-
-//
 let notifyToClient = (phoneNumber, reportKey) => {
 
-    return;
 }
