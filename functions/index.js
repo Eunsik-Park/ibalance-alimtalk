@@ -1,26 +1,38 @@
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-admin.initializeApp({credential: admin.credential.applicationDefault()});
 
-// import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+admin.initializeApp();
 
-exports.populateFirebaseUser = functions.region('asia-northeast3').https.onRequest((request, response) => {
+exports.getBirthDate = functions.region('asia-northeast3').https.onRequest((request, response) => {
   ({reportKey, birthDate} = request.body);
-  request.get('content-type')
-  //functions.logger.info("Hello logs!", {structuredData: true});
-  response.send(populateFirebaseUser(`${reportKey}`, `${birthDate}`));
-});
+  request.get('content-type', 'application/json');
+
+  if(reportKey || reportKey !== 'undefined'){
+    populateFirebaseUser(`${reportKey}`, `${birthDate}`).then((uid) => {
+      console.log(uid);
+      // storeReport(uid); 
+    });
+    response.send(`reponse Data : {reportKey : ${reportKey} birthDate : ${birthDate}}`);
+
+    //TODO : Use this request.data for uploading images.
+    // console.log("request.data : " + `${data}`);
+    //storeReport(uid);
+
+  }else{
+    console.log("Please check birthDate");
+  }});
 
 
-let populateFirebaseUser = (reportKey, birthDate) => {  
-  admin.auth().createUser({
+let populateFirebaseUser = async (reportKey, birthDate) => {  
+  return admin.auth().createUser({
     email: reportKey+'@teamelysium.kr',
     password: birthDate
   })
   .then((userRecord) => {
     // See the UserRecord reference doc for the contents of userRecord.
-    console.log('Successfully created new user and reportKey :', userRecord.id);
+    // console.log('Successfully created new user and reportKey :', userRecord.id);
+    return userRecord.uid;
   })
   .catch((error) => {
     console.log('Error creating new user:', error);
