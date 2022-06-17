@@ -28,10 +28,10 @@ export const requestAlimTalk = functions.region('asia-northeast3').https.onReque
       // TODO : Get report image for post data  `${reportImages}`
       //storeReport( `${reportImages}`, `${reportKey}`); 
     });
-    
 
-    const url = notifyToClient("01047094788", `${reportKey}`, `${birthDate}`);
+    // const url = notifyToClient("01047094788", `${reportKey}`, `${birthDate}`);
     // console.log("phoneNumber, url : " + url.phone + ", " + url.url);
+    getReportPage("testKey9");
 
   }else{
     console.log("Please your reportKey");
@@ -70,7 +70,6 @@ let populateFirebaseUser = async (reportKey, birthDate) => {
   });
 
   console.log(`${reportFile} uploaded to images folder ${reportKey}` );
-
 } 
 
 // reuturn URL
@@ -102,6 +101,15 @@ const requestBirthDatePage = (reportKey, birthDate) => {
   }
 }
 
-const getReportPage = (birthDate) => {
+const getReportPage = async (reportKey) => {
  // 저장해둔 파일 가져오기
+ const options = {
+  destination: reportKey,
+  };
+
+  await rootStorage.bucket('gs://ibalance-image-bucket').file(reportKey).download(options);
+
+  console.log(
+    `gs://ibalance-image-bucket/${reportKey} downloaded to ibalance-image-bucket/${reportKey}.`
+  );
 }
